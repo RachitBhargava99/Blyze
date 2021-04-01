@@ -34,3 +34,16 @@ class GroupUser(Base):
 
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     group_id = Column(Integer, ForeignKey('groups.id'), primary_key=True)
+
+class Chat(Base):
+    __tablename__ = 'chats'
+
+    chat_id = Column(Integer, primary_key=True)
+    chat_type = Column(Integer)
+
+
+class Project(Base):
+    __tablename__ = 'projects'
+
+    project_id = Column(Integer, primary_key=True)
+    chat_id = Column(Integer, ForeignKey('chats.chat_type'))
