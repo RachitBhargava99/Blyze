@@ -60,6 +60,19 @@ class Chat_Individual_Pairs(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     chat_id = Column(Integer, ForeignKey('chats.chat_id'))
 
+class Org_Membership(Base):
+    __tablename__ = 'orgmemberships'
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+    org_id = Column(Integer, ForeignKey('organizations.org_id'))
+
+class Project_Membership(Base):
+    __tablename__ = 'projectmemberships'
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+    project_id = Column(Integer, ForeignKey('projects.project_id'))
+
+
 class Message(Base):
     __tablename__ = 'messages'
 
