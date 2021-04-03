@@ -8,7 +8,6 @@ from middleware.auth import AuthenticationMiddleware
 
 
 def get_messages(user_id: int):
-	#I'm not familiar with pydantic, I'll need to see how to query to see if an id is in a list of id's
-	#Too tired to finish this rn...
-	db_chats = db.query(models.Chat).filter_by(id=user_id)
+	chat_ids = db.query(models.)
+	#db_chats = db.query(models.Chat).filter_by()
 	return db_chats

@@ -64,13 +64,6 @@ class UserList(BaseModel):
 # ===================================
 # Chat Models start here
 # ===================================
-class Chat(BaseModel):
-    id: int
-    user_list: int
-    messages: List[str] #Messages should probably be a different model, but I'm tired rn -\_(")_/-
-
-class ChatList(BaseModel):
-    chats: List[Chat]
 
 
 

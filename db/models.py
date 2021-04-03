@@ -46,4 +46,30 @@ class Project(Base):
     __tablename__ = 'projects'
 
     project_id = Column(Integer, primary_key=True)
-    chat_id = Column(Integer, ForeignKey('chats.chat_type'))
+    chat_id = Column(Integer, ForeignKey('chats.chat_id'))
+
+class Organization(Base):
+    __tablename__ = 'organizations'
+
+    org_id = Column(Integer, primary_key=True)
+    chat_id = Column(Integer, ForeignKey('chats.chat_id'))
+
+class Chat_Individual_Pairs(Base):
+    __tablename__ = 'chatpairs'
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+    chat_id = Column(Integer, ForeignKey('chats.chat_id'))
+
+class Message(Base):
+    __tablename__ = 'messages'
+
+    message_id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey('users.id'))
+    chat_id = Column(Integer, ForeignKey('chats.chat_id'))
+    message = Column(String(255))
+    time = Column(Integer, nullable=True) #Not sure how to to dates yet, so I'll fix this after initial mvp
+
+
+
+
+
