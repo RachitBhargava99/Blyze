@@ -103,3 +103,18 @@ class Chat(BaseModel):
 
 class ChatList(BaseModel):
     chats: List[Chat]
+
+
+
+
+
+
+
+
+
+
+class Message(BaseModel):
+    text: str
+    sender: str
+    chat_id: int
+    time: int
