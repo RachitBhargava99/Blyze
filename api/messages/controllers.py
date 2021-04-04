@@ -43,3 +43,14 @@ def get_organization_messages(user_id: int):
 		messages = db.query(models.Message).filter_by(chat_id=chat_id)
 		response.append(messages)
 	return response
+
+def post_message(user_id: int, text: str, chat_id: int, time: int):
+	db_message = models.Message(sender_id=user_id, chat_id=chat_id, message=text, time=time)
+    db.add(db_message)
+    db.commit()
+    #db.refresh(db_message)
+
+
+
+
+

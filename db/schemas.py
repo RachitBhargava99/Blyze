@@ -65,6 +65,10 @@ class UserList(BaseModel):
 # Chat Models start here
 # ===================================
 
-
+class Message(BaseModel):
+    text: str
+    sender: str
+    chat_id: int
+    time: int
 
 
