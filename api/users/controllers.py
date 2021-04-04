@@ -32,5 +32,5 @@ def login_user(db: Session, username: str, pwd: str) -> Union[schemas.User, None
     return None
 
 
-def get_user_by_id(db: Session, user_id: int) -> schemas.User:
+def get_user_by_id(db: Session, user_id: int) -> models.User:
     return db.query(models.User).filter_by(id=user_id).first()

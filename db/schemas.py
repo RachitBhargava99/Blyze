@@ -31,6 +31,35 @@ class OrganizationList(BaseModel):
 
 
 # ===================================
+# Project Models start here
+# ===================================
+class ProjectBase(BaseModel):
+    name: str
+    base_location: str
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class ProjectEdit(ProjectBase):
+    pass
+
+
+class ProjectID(BaseModel):
+    id: int
+
+
+class Project(ProjectBase, ProjectID):
+    class Config:
+        orm_mode = True
+
+
+class ProjectList(BaseModel):
+    projects: List[Project]
+
+
+# ===================================
 # User Models start here
 # ===================================
 class UserBase(BaseModel):

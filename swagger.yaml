@@ -16,6 +16,8 @@ tags:
   description: Endpoints related to user management
 - name: organizations
   description: Endpoints related to organization management and user linking
+- name: projects
+  description: Endpoints related to project management and project-organization linking
 paths:
   /user:
     put:
@@ -248,6 +250,242 @@ paths:
         422:
           description: Input rules broken - check description
           content: { }
+  /projs:
+    put:
+      tags:
+        - projects
+      summary: Creates a new organization with the creator as the owner
+      operationId: create_proj
+      description: The user must be logged in.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Project'
+        required: true
+      responses:
+        200:
+          description: Project Created Successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired
+        409:
+          description: Project name already exist
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+  /projs/{projectId}:
+    patch:
+      tags:
+        - projects
+      summary: Updates a project
+      operationId: update_project
+      description: The user must be logged in. The user's organization must be working on the project.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project that must be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Project update successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project not found
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+    delete:
+      tags:
+        - projects
+      summary: Deletes a project
+      operationId: delete_project
+      description: The user must be logged in. The logged in user must be the owner of the organization. The new user must already be in the organization.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project that must be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Project deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project not found
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+    get:
+      tags:
+        - projects
+      summary: Returns project info
+      operationId: get_project_info
+      description: The user must be logged in. The logged in user must be the owner of the organization. The new user must already be in the organization.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project that must be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Project info retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project not found
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+  /projs/{projectId}/orgs/{orgId}:
+    patch:
+      tags:
+        - projects
+      summary: Adds an organization to a project
+      operationId: add_project_org
+      description: The user must be logged in. The user's organization must be working on the project.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project to which the organization must be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orgId
+          in: path
+          description: ID of the organization to be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Organization added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project / organization not found
+          content: { }
+        409:
+          description: Organization is already working on the project
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+    delete:
+      tags:
+        - projects
+      summary: Removes an organization from a project
+      operationId: remove_project_org
+      description: The user must be logged in. The user's organization must be working on the project.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project from which the organization must be removed
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: orgId
+          in: path
+          description: ID of the organization to be removed
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Project deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Project'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project / organization not found
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+  /projs/{projId}/orgs:
+    get:
+      tags:
+        - projects
+      summary: Retrieves a list of organizations working on a project
+      operationId: get_project_orgs
+      description: The user must be logged in. The user's organization must be working on the project.
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project from which the organization must be removed
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Project organizations successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ProjectArray'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user's organization is not working on the project.
+          content: { }
+        404:
+          description: Project
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
 
 
 components:
@@ -302,7 +540,7 @@ components:
           format: int64
         name:
           type: string
-          description: Short description of the group
+          description: Name of the organization
           minLength: 3
           maxLength: 128
         owner_id:
@@ -319,6 +557,37 @@ components:
           description: An array of organization objects
           items:
             $ref: '#/components/schemas/Organization'
+    Project:
+      type: object
+      required:
+        - name
+        - base_location
+      properties:
+        id:
+          type: integer
+          description: Internal ID of the project, as seen in the database
+          format: int64
+        name:
+          type: string
+          description: Name of the project
+          minLength: 3
+          maxLength: 127
+        base_location:
+          type: string
+          description: Main location of the project incident
+          minLength: 2
+          maxLength: 255
+    ProjectArray:
+      type: object
+      required:
+        - projs
+      properties:
+        projs:
+          type: array
+          description: An array of project objects
+          items:
+            $ref: '#/components/schemas/Project'
+
 
   securitySchemes:
     userAuth:
