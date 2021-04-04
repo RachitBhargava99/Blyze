@@ -10,30 +10,29 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(255), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
+    organization_id = Column(Integer, ForeignKey('organizations.id'), nullable=True)
 
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str, org_id: str = None):
         self.username = username
         self.password = self.get_hash(password)
+        self.organization_id = org_id
 
     @staticmethod
     def get_hash(text) -> str:
         return str(bcrypt.hashpw(bytes(text, encoding='utf8'), b'$2b$12$.Ez2TpYFdXhuIRWIavuklO'))
 
 
-class Group(Base):
-    __tablename__ = 'groups'
+class Organization(Base):
+    __tablename__ = 'organizations'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(127), unique=True)
-    is_active = Column(Boolean, default=True)
-    owner_id = Column(Integer, ForeignKey('users.id'))
+    name = Column(String(127), unique=True, nullable=False)
+    owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
+    def __init__(self, name, creator_id):
+        self.name = name
+        self.owner_id = creator_id
 
-class GroupUser(Base):
-    __tablename__ = 'group_users'
-
-    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    group_id = Column(Integer, ForeignKey('groups.id'), primary_key=True)
 
 class Chat(Base):
     __tablename__ = 'chats'

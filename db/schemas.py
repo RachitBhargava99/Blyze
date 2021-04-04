@@ -5,27 +5,29 @@ from typing import List, Optional
 
 
 # ===================================
-# Group Models start here
+# Organization Models start here
 # ===================================
-class GroupBase(BaseModel):
+class OrganizationBase(BaseModel):
     name: str
-    default_duration: int
 
 
-class GroupID(BaseModel):
+class OrganizationCreate(OrganizationBase):
+    pass
+
+
+class OrganizationID(BaseModel):
     id: int
 
 
-class Group(GroupBase, GroupID):
-    is_active: bool
+class Organization(OrganizationBase, OrganizationID):
     owner_id: int
 
     class Config:
         orm_mode = True
 
 
-class GroupList(BaseModel):
-    groups: List[Group]
+class OrganizationList(BaseModel):
+    orgs: List[Organization]
 
 
 # ===================================
@@ -67,11 +69,8 @@ class UserList(BaseModel):
 class Chat(BaseModel):
     id: int
     user_list: int
-    messages: List[str] #Messages should probably be a different model, but I'm tired rn -\_(")_/-
+    messages: List[str]  # Messages should probably be a different model, but I'm tired rn -\_(")_/-
+
 
 class ChatList(BaseModel):
     chats: List[Chat]
-
-
-
-

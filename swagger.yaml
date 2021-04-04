@@ -14,6 +14,8 @@ servers:
 tags:
 - name: user
   description: Endpoints related to user management
+- name: organizations
+  description: Endpoints related to organization management and user linking
 paths:
   /user:
     put:
@@ -72,6 +74,150 @@ paths:
           description: The provided combination of email address and password was invalid
           content: {}
 
+  /orgs:
+    put:
+      tags:
+        - organizations
+      summary: Creates a new organization with the creator as the owner
+      operationId: register_org
+      description: The user must be logged in. The organization name must not share any other organization name in the system.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        200:
+          description: Organization Created Successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+        401:
+          description: Authentication token not provided / invalid / expired
+        409:
+          description: Organization name already exist
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+  /orgs/{orgId}:
+    delete:
+      tags:
+        - organizations
+      summary: Deletes an existing organization
+      operationId: delete_org
+      description: The user must be already registered in the system. The organization ID supplied must be correct. The user must be the owner of the organization.
+      parameters:
+        - name: orgId
+          in: path
+          description: ID of the organization to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Organization Deleted Successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised when user is not the owner of the organization.
+          content: { }
+        404:
+          description: Invalid organization ID supplied
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+  /orgs/{orgId}/add/{newUserId}:
+    put:
+      tags:
+        - organizations
+      summary: Creates a new organization with the creator as the owner
+      operationId: add_user_to_org
+      description: The user must be logged in. The logged in user must be the owner of the organization. The new user must not already be in org.
+      parameters:
+        - name: orgId
+          in: path
+          description: ID of the organization to which the user must be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: newUserId
+          in: path
+          description: ID of the user that needs to be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: User added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised if the logged in user is not the owner of the organization.
+          content: { }
+        404:
+          description: Organization not found
+          content: { }
+        409:
+          description: The user is already a member of the given organization
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+    delete:
+      tags:
+        - organizations
+      summary: Removes a user from an organization
+      operationId: remove_user_from_org
+      description: The user must be logged in. The logged in user must be the owner of the organization. The new user must already be in the organization.
+      parameters:
+        - name: orgId
+          in: path
+          description: ID of the organization to which the user must be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: newUserId
+          in: path
+          description: ID of the user that needs to be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: User Removed Successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised when user is not the owner of the organization.
+          content: { }
+        404:
+          description: Invalid organization ID supplied / user not registered in the organization
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
+
+
 components:
   schemas:
     User:
@@ -113,45 +259,34 @@ components:
           description: List of user objects
           items:
             $ref: '#/components/schemas/User'
-    GroupID:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: integer
-          description: Internal ID of the group, as seen in the database
-          format: int64
-    Group:
+    Organization:
       type: object
       required:
         - name
       properties:
         id:
           type: integer
-          description: Internal ID of the group, as seen in the database
+          description: Internal ID of the organization, as seen in the database
           format: int64
         name:
           type: string
           description: Short description of the group
           minLength: 3
           maxLength: 128
-        default_duration:
+        owner_id:
           type: integer
-          description: Default duration for the group's sessions
+          description: User ID of the owner of the organization, as seen in the database
           format: int64
-          minimum: 10
-          maximum: 600
-    GroupArray:
+    OrganizationArray:
       type: object
       required:
-        - name
+        - orgs
       properties:
-        groups:
+        orgs:
           type: array
-          description: An array of group objects
+          description: An array of organization objects
           items:
-            $ref: '#/components/schemas/Group'
+            $ref: '#/components/schemas/Organization'
 
   securitySchemes:
     userAuth:
