@@ -36,7 +36,7 @@ def delete_organization(orgId: int, request: Request, user_id: int = Depends(get
 
 @router.put('/{orgId}/add/{newUserId}', response_model=schemas.Organization)
 def add_user_to_organization(orgId: int, newUserId: int, request: Request, user_id: int = Depends(get_user_id),
-                    db: Session = Depends(get_db)):
+                             db: Session = Depends(get_db)):
     db_org = get_organization_by_id(db, orgId)
     if db_org is None:
         raise HTTPException(status_code=404, detail="Requested organization not found")
@@ -51,7 +51,7 @@ def add_user_to_organization(orgId: int, newUserId: int, request: Request, user_
 
 @router.delete('/{orgId}/add/{newUserId}', response_model=schemas.Organization)
 def remove_user_from_organization(orgId: int, newUserId: int, request: Request, user_id: int = Depends(get_user_id),
-                    db: Session = Depends(get_db)):
+                                  db: Session = Depends(get_db)):
     db_org = get_organization_by_id(db, orgId)
     if db_org is None:
         raise HTTPException(status_code=404, detail="Requested organization not found")
@@ -62,3 +62,15 @@ def remove_user_from_organization(orgId: int, newUserId: int, request: Request, 
         raise HTTPException(status_code=404, detail="The user must already be a member of this organization.")
     remove_user_from_organization(db, newUserId)
     return db_org
+
+
+@router.get('/{orgId}/users', response_model=schemas.UserList)
+def get_org_users(orgId: int, request: Request, user_id: int = Depends(get_user_id), db: Session = Depends(get_db)):
+    db_org = get_organization_by_id(db, orgId)
+    if db_org is None:
+        raise HTTPException(status_code=404, detail="Requested organization not found")
+    org_users = get_users_by_org_id(db, orgId)
+    org_user_ids = [x.id for x in org_users]
+    if user_id not in org_user_ids:
+        raise HTTPException(status_code=401, detail="Non-members not allowed to perform this operation")
+    return {'users': org_users}

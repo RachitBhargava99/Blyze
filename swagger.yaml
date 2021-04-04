@@ -216,6 +216,38 @@ paths:
         422:
           description: Input rules broken - check description
           content: { }
+  /orgs/{orgId}/users:
+    get:
+      tags:
+        - organizations
+      summary: Returns a list of users registered in the organization
+      operationId: get_users_from_org
+      description: The user must be logged in. The user must already be in the organization.
+      parameters:
+        - name: orgId
+          in: path
+          description: ID of the organization to which the user must be added
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: List retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UserArray'
+        401:
+          description: Authentication token not provided / invalid / expired. Also raised when user is not a member of the organization.
+          content: { }
+        404:
+          description: Invalid organization ID supplied
+          content: { }
+        422:
+          description: Input rules broken - check description
+          content: { }
 
 
 components:
