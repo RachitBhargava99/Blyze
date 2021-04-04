@@ -23,4 +23,4 @@ def get_messages(request: Request):
 @login_required
 def post_message(request: Request, message: schemas.Message):
 	user_id = request.state.user_id
-	post_message(user_id, message.text, chat_id, user_id, 0)
+	post_message(user_id, message.text, chat_id, 0)
